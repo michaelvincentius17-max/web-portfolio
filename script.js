@@ -102,7 +102,7 @@ function initProjectFilter() {
 }
 
 /* ==========================================================================
-   LIGHTBOX MODAL
+   LIGHTBOX MODAL & GALLERY
    ========================================================================== */
 let currentLightboxGallery = [];
 let currentLightboxIndex = 0;
@@ -112,34 +112,36 @@ function initLightbox() {
   const lightboxImg = document.getElementById('lightboxImg');
   const lightboxCaption = document.getElementById('lightboxCaption');
   const closeBtn = document.getElementById('lightboxClose');
+  const prevBtn = document.getElementById('lightboxPrev');
+  const nextBtn = document.getElementById('lightboxNext');
 
   if (!modal || !lightboxImg) return;
 
-  // Event delegation for all lightbox triggers
-  document.addEventListener('click', (e) => {
-    const trigger = e.target.closest('[data-lightbox-src]');
-    if (trigger) {
-      const src = trigger.getAttribute('data-lightbox-src');
-      const caption = trigger.getAttribute('data-lightbox-caption') || '';
-      if (src) openLightbox(src, caption);
+  function renderCurrentItem() {
+    if (!currentLightboxGallery.length) return;
+    const item = currentLightboxGallery[currentLightboxIndex];
+    lightboxImg.src = item.src;
+    lightboxCaption.textContent = item.caption;
+
+    if (currentLightboxGallery.length > 1) {
+      if (prevBtn) prevBtn.style.display = 'flex';
+      if (nextBtn) nextBtn.style.display = 'flex';
+    } else {
+      if (prevBtn) prevBtn.style.display = 'none';
+      if (nextBtn) nextBtn.style.display = 'none';
     }
-  });
+  }
 
-  closeBtn.addEventListener('click', closeLightbox);
-
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) closeLightbox();
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modal.classList.contains('active')) {
-      closeLightbox();
+  function openLightbox(src, caption, gallery, startIndex) {
+    if (gallery && gallery.length > 0) {
+      currentLightboxGallery = gallery;
+      currentLightboxIndex = startIndex >= 0 ? startIndex : 0;
+    } else {
+      currentLightboxGallery = [{ src, caption }];
+      currentLightboxIndex = 0;
     }
-  });
 
-  function openLightbox(src, caption) {
-    lightboxImg.src = src;
-    lightboxCaption.textContent = caption;
+    renderCurrentItem();
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
   }
@@ -148,6 +150,68 @@ function initLightbox() {
     modal.classList.remove('active');
     document.body.style.overflow = '';
   }
+
+  function prevImage() {
+    if (currentLightboxGallery.length <= 1) return;
+    currentLightboxIndex = (currentLightboxIndex - 1 + currentLightboxGallery.length) % currentLightboxGallery.length;
+    renderCurrentItem();
+  }
+
+  function nextImage() {
+    if (currentLightboxGallery.length <= 1) return;
+    currentLightboxIndex = (currentLightboxIndex + 1) % currentLightboxGallery.length;
+    renderCurrentItem();
+  }
+
+  // Global event delegation for all lightbox triggers
+  document.addEventListener('click', (e) => {
+    const trigger = e.target.closest('[data-lightbox-src]');
+    if (!trigger) return;
+
+    // Do not open modal on MBG thumbnail click (thumbnail click switches the inspector)
+    if (trigger.hasAttribute('data-mbg-screen') && !trigger.classList.contains('active')) {
+      return;
+    }
+
+    const src = trigger.getAttribute('data-lightbox-src');
+    const caption = trigger.getAttribute('data-lightbox-caption') || '';
+    const galleryName = trigger.getAttribute('data-lightbox-gallery');
+
+    let galleryItems = [];
+    let activeIndex = 0;
+
+    if (galleryName) {
+      const group = Array.from(document.querySelectorAll(`[data-lightbox-gallery="${galleryName}"]`));
+      galleryItems = group.map(el => ({
+        src: el.getAttribute('data-lightbox-src'),
+        caption: el.getAttribute('data-lightbox-caption') || ''
+      }));
+      activeIndex = group.indexOf(trigger);
+      if (activeIndex < 0) activeIndex = 0;
+    } else {
+      galleryItems = [{ src, caption }];
+      activeIndex = 0;
+    }
+
+    openLightbox(src, caption, galleryItems, activeIndex);
+  });
+
+  if (closeBtn) closeBtn.addEventListener('click', closeLightbox);
+  if (prevBtn) prevBtn.addEventListener('click', (e) => { e.stopPropagation(); prevImage(); });
+  if (nextBtn) nextBtn.addEventListener('click', (e) => { e.stopPropagation(); nextImage(); });
+
+  modal.addEventListener('click', (e) => {
+    if (!e.target.closest('.lightbox-img') && !e.target.closest('.lightbox-nav-btn')) {
+      closeLightbox();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (!modal.classList.contains('active')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') prevImage();
+    if (e.key === 'ArrowRight') nextImage();
+  });
 }
 
 /* ==========================================================================
@@ -334,6 +398,8 @@ function initMbgScreenInspector() {
   const descElem = document.getElementById('mbgInspectorDesc');
   const tagsElem = document.getElementById('mbgInspectorTags');
   const zoomBtn = document.getElementById('mbgInspectorZoomBtn');
+  const activeImg = document.getElementById('mbgInspectorActiveImg');
+  const activeImgWrap = document.getElementById('mbgInspectorActiveImgWrap');
   const prevBtn = document.getElementById('mbgInspectorPrev');
   const nextBtn = document.getElementById('mbgInspectorNext');
 
@@ -364,6 +430,12 @@ function initMbgScreenInspector() {
 
       if (tagsElem) {
         tagsElem.innerHTML = data.tags.map(t => `<span class="mbg-tag-item"><i class="fa-solid fa-check"></i> ${t}</span>`).join('');
+      }
+
+      if (activeImg) activeImg.src = data.imgSrc;
+      if (activeImgWrap) {
+        activeImgWrap.setAttribute('data-lightbox-src', data.imgSrc);
+        activeImgWrap.setAttribute('data-lightbox-caption', data.caption);
       }
 
       if (zoomBtn) {
