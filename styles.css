@@ -1832,7 +1832,7 @@ input[type=range] {
 .site-footer {
   border-top: 1px solid var(--border-subtle);
   background: #ffffff;
-  padding: 4rem 0 2rem;
+  padding: 2.25rem 0;
 }
 
 .footer-top {
