@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initNavbar();
   initProjectFilter();
   initLightbox();
-  initHydrationCalculator();
   initMbgScreenInspector();
   initContactForm();
   initCopyActions();
@@ -214,36 +213,6 @@ function initLightbox() {
   });
 }
 
-/* ==========================================================================
-   KEEP IT FULL - HYDRATION & SAVINGS SIMULATOR
-   ========================================================================== */
-function initHydrationCalculator() {
-  const slider = document.getElementById('bottlesSlider');
-  const sliderVal = document.getElementById('sliderVal');
-  const moneySavedElem = document.getElementById('moneySaved');
-  const plasticSavedElem = document.getElementById('plasticSaved');
-
-  if (!slider) return;
-
-  const BOTTLE_COST_ESTIMATE = 4500; // Rp 4.500 per botol plastik mineral 600ml
-  const WEEKS_IN_MONTH = 4.3;
-
-  function updateCalc() {
-    const val = parseInt(slider.value, 10);
-    sliderVal.textContent = `${val} kali / minggu`;
-
-    // Botol plastik tercegah per bulan
-    const monthlyBottles = Math.round(val * WEEKS_IN_MONTH);
-    // Uang yang dihemat per bulan
-    const monthlyMoney = monthlyBottles * BOTTLE_COST_ESTIMATE;
-
-    plasticSavedElem.textContent = `${monthlyBottles} Botol`;
-    moneySavedElem.textContent = `Rp ${monthlyMoney.toLocaleString('id-ID')}`;
-  }
-
-  slider.addEventListener('input', updateCalc);
-  updateCalc();
-}
 
 /* ==========================================================================
    CONTACT FORM & WHATSAPP GENERATOR
