@@ -958,7 +958,7 @@ img {
   min-height: 2.75rem;
   display: flex;
   align-items: flex-start;
-  word-break: break-word;
+  word-break: normal;
   overflow-wrap: break-word;
   line-height: 1.45;
 }
@@ -1055,10 +1055,20 @@ img {
   grid-template-columns: 1.05fr 0.95fr;
   gap: 3.5rem;
   align-items: center;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .project-layout-grid.reverse {
   grid-template-columns: 0.95fr 1.05fr;
+}
+
+.project-content-pane,
+.project-visual-pane {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .project-layout-grid.reverse .project-content-pane {
@@ -1196,14 +1206,18 @@ img {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.25rem;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* Interactive Mockup Carousel / Screens Grid (Horizontal Scroll HP Mockups) */
 .screens-row {
-  display: inline-flex;
+  display: flex;
   flex-wrap: nowrap;
-  gap: 1.15rem;
+  gap: 20px;
   overflow-x: auto;
   overflow-y: hidden;
   scroll-behavior: smooth;
@@ -1213,6 +1227,7 @@ img {
   scrollbar-color: #cbd5e1 rgba(241, 245, 249, 0.8);
   max-width: 100%;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .screens-row::-webkit-scrollbar {
@@ -1237,6 +1252,8 @@ img {
 .screen-thumb-card {
   flex: 0 0 160px;
   width: 160px;
+  min-width: 160px;
+  max-width: 160px;
   display: flex;
   flex-direction: column;
   background: #ffffff;
@@ -1248,6 +1265,7 @@ img {
   position: relative;
   box-shadow: var(--shadow-sm);
   user-select: none;
+  box-sizing: border-box;
 }
 
 .screen-thumb-card:hover {
@@ -1272,6 +1290,8 @@ img {
   aspect-ratio: 9 / 19.5;
   object-fit: cover;
   display: block;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 .screen-label {
@@ -1288,7 +1308,62 @@ img {
   transition: all var(--transition-fast);
 }
 
-/* Horizontal Project Details (Side-by-side row grid without Brief/Proses/Hasil labels) */
+/* Brand Identity Card (Keep IT Full) */
+.brand-identity-card {
+  display: flex;
+  align-items: center;
+  gap: 1.15rem;
+  padding: 1.15rem 1.25rem;
+  background: rgba(16, 185, 129, 0.08);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin-top: 0.5rem;
+}
+
+.brand-identity-logo {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  object-fit: cover;
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  transition: transform var(--transition-fast);
+}
+
+.brand-identity-logo:hover {
+  transform: scale(1.05);
+}
+
+.brand-identity-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.brand-identity-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 0.25rem;
+  line-height: 1.35;
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+.brand-identity-desc {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin: 0;
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+/* Horizontal Project Details (3-Column Full-Width Card Grid without Brief/Proses/Hasil labels) */
 .project-horizontal-details {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1297,6 +1372,8 @@ img {
   padding-top: 2rem;
   border-top: 1px solid var(--border-subtle);
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   align-items: stretch;
 }
 
@@ -1310,6 +1387,7 @@ img {
   gap: 0.65rem;
   transition: all var(--transition-fast);
   min-width: 0;
+  box-sizing: border-box;
 }
 
 .detail-block:hover {
@@ -1327,6 +1405,8 @@ img {
   align-items: center;
   gap: 0.55rem;
   line-height: 1.35;
+  word-break: normal;
+  overflow-wrap: break-word;
 }
 
 .detail-block-desc {
@@ -1334,7 +1414,7 @@ img {
   color: var(--text-secondary);
   line-height: 1.65;
   margin: 0;
-  word-break: break-word;
+  word-break: normal;
   overflow-wrap: break-word;
 }
 
@@ -2182,9 +2262,11 @@ p, span, h1, h2, h3, h4, h5, h6,
 .about-text,
 .hero-bio,
 .spec-detail,
-.contact-value {
-  word-break: break-word;
+.contact-value,
+.brand-identity-desc {
+  word-break: normal;
   overflow-wrap: break-word;
+  writing-mode: horizontal-tb;
 }
 
 @media (max-width: 1024px) {

@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initNavbar();
   initProjectFilter();
   initLightbox();
+  initHorizontalDragScroll();
   initMbgScreenInspector();
   initContactForm();
   initCopyActions();
@@ -213,6 +214,55 @@ function initLightbox() {
   });
 }
 
+
+/* ==========================================================================
+   HORIZONTAL DRAG & SWIPE SCROLLING (HP MOCKUPS)
+   ========================================================================== */
+function initHorizontalDragScroll() {
+  const rows = document.querySelectorAll('.screens-row');
+  rows.forEach(row => {
+    let isDown = false;
+    let startX = 0;
+    let scrollLeft = 0;
+    let hasMoved = false;
+
+    row.addEventListener('mousedown', (e) => {
+      if (e.button !== 0) return;
+      isDown = true;
+      hasMoved = false;
+      startX = e.pageX - row.offsetLeft;
+      scrollLeft = row.scrollLeft;
+      row.style.cursor = 'grabbing';
+    });
+
+    row.addEventListener('mouseleave', () => {
+      isDown = false;
+      row.style.cursor = '';
+    });
+
+    row.addEventListener('mouseup', () => {
+      isDown = false;
+      row.style.cursor = '';
+    });
+
+    row.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      const x = e.pageX - row.offsetLeft;
+      const walk = (x - startX);
+      if (Math.abs(walk) > 6) {
+        hasMoved = true;
+      }
+      row.scrollLeft = scrollLeft - walk;
+    });
+
+    row.addEventListener('click', (e) => {
+      if (hasMoved) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }, true);
+  });
+}
 
 /* ==========================================================================
    CONTACT FORM & WHATSAPP GENERATOR
